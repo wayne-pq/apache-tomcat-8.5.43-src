@@ -527,14 +527,18 @@ public class StandardService extends LifecycleMBeanBase implements Service {
      */
     @Override
     protected void initInternal() throws LifecycleException {
-
+        // 往jmx中注册自己
         super.initInternal();
 
         if (engine != null) {
+            //初始化engine，engine底下的子容器（Host、Context、Wrapper）不在init中初始化
+            //初始化了Realm组件
+            //还初始化了ContainerBase 的startStopExecutor
             engine.init();
         }
 
         // Initialize any Executors
+        // 如果存在Executor线程池，则进行初始化，默认是没有的
         for (Executor executor : findExecutors()) {
             if (executor instanceof JmxEnabled) {
                 ((JmxEnabled) executor).setDomain(getDomain());
